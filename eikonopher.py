@@ -20,6 +20,13 @@
 
 import argparse
 
+import git
+
+try:
+    __revision__ = git.Repo('.').git.describe(tags=True, dirty=True,
+                                              always=True, abbrev=40)
+except git.InvalidGitRepositoryError:
+    __revision__ = 'unknown'
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
