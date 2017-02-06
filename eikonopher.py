@@ -34,6 +34,7 @@ except git.InvalidGitRepositoryError:
 class Config(object):
     DEBUG = environ.get('EIKONOPHER_DEBUG', False)
     PORT = environ.get('EIKONOPHER_PORT', 4506)
+    SECRET_KEY = environ.get('EIKONOPHER_SECRET_KEY', 'secret')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -43,15 +44,21 @@ if __name__ == "__main__":
                         default=Config.DEBUG)
     parser.add_argument('--port', type=int, default=Config.PORT,
                         help='The tcp port on which to serve requests')
+    parser.add_argument('--secret-key', type=str,
+                        default=Config.SECRET_KEY,
+                        help='The secret key used to establish secure '
+                             'sessions with clients')
 
     args = parser.parse_args()
 
     Config.DEBUG = args.debug
     Config.PORT = args.port
+    Config.SECRET_KEY = args.secret_key
 
 app = Flask(__name__)
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config["SECRET_KEY"] = Config.SECRET_KEY  # for WTF-forms and login
 
 if __name__ == "__main__":
 
@@ -59,5 +66,7 @@ if __name__ == "__main__":
     print('__revision__: {}'.format(__revision__))
     print('Debug: {}'.format(Config.DEBUG))
     print('Port: {}'.format(Config.PORT))
+    if Config.DEBUG:
+        print('Secret Key: {}'.format(Config.SECRET_KEY))
 
     app.run(debug=Config.DEBUG, port=Config.PORT, use_reloader=Config.DEBUG)
