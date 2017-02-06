@@ -22,6 +22,7 @@ import argparse
 from os import environ
 
 import git
+from flask import Flask
 
 try:
     __revision__ = git.Repo('.').git.describe(tags=True, dirty=True,
@@ -48,9 +49,15 @@ if __name__ == "__main__":
     Config.DEBUG = args.debug
     Config.PORT = args.port
 
+app = Flask(__name__)
+
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 if __name__ == "__main__":
 
     print('eikonopher')
     print('__revision__: {}'.format(__revision__))
     print('Debug: {}'.format(Config.DEBUG))
     print('Port: {}'.format(Config.PORT))
+
+    app.run(debug=Config.DEBUG, port=Config.PORT, use_reloader=Config.DEBUG)
