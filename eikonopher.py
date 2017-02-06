@@ -19,6 +19,7 @@
 # along with eikonopher.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+from os import environ
 
 import git
 
@@ -30,13 +31,21 @@ except git.InvalidGitRepositoryError:
 
 
 class Config(object):
-    pass
+    DEBUG = environ.get('EIKONOPHER_DEBUG', False)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+
+    parser.add_argument('--debug', action='store_true',
+                        help='Print additional information',
+                        default=Config.DEBUG)
+
     args = parser.parse_args()
+
+    Config.DEBUG = args.debug
 
 if __name__ == "__main__":
 
     print('eikonopher')
     print('__revision__: {}'.format(__revision__))
+    print('Debug: {}'.format(Config.DEBUG))
