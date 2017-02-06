@@ -28,6 +28,10 @@ try:
 except git.InvalidGitRepositoryError:
     __revision__ = 'unknown'
 
+
+class Config(object):
+    pass
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
