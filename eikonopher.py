@@ -32,6 +32,7 @@ except git.InvalidGitRepositoryError:
 
 class Config(object):
     DEBUG = environ.get('EIKONOPHER_DEBUG', False)
+    PORT = environ.get('EIKONOPHER_PORT', 4506)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -39,13 +40,17 @@ if __name__ == "__main__":
     parser.add_argument('--debug', action='store_true',
                         help='Print additional information',
                         default=Config.DEBUG)
+    parser.add_argument('--port', type=int, default=Config.PORT,
+                        help='The tcp port on which to serve requests')
 
     args = parser.parse_args()
 
     Config.DEBUG = args.debug
+    Config.PORT = args.port
 
 if __name__ == "__main__":
 
     print('eikonopher')
     print('__revision__: {}'.format(__revision__))
     print('Debug: {}'.format(Config.DEBUG))
+    print('Port: {}'.format(Config.PORT))
