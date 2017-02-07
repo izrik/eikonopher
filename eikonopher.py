@@ -20,6 +20,7 @@
 
 import argparse
 from os import environ
+import random
 
 import git
 from flask import Flask
@@ -49,6 +50,8 @@ if __name__ == "__main__":
                         help='The secret key used to establish secure '
                              'sessions with clients')
 
+    parser.add_argument('--create-secret-key', action='store_true')
+
     args = parser.parse_args()
 
     Config.DEBUG = args.debug
@@ -69,4 +72,9 @@ if __name__ == "__main__":
     if Config.DEBUG:
         print('Secret Key: {}'.format(Config.SECRET_KEY))
 
-    app.run(debug=Config.DEBUG, port=Config.PORT, use_reloader=Config.DEBUG)
+    if args.create_secret_key:
+        digits = '0123456789abcdef'
+        key = ''.join((random.choice(digits) for x in xrange(48)))
+        print(key)
+    else:
+        app.run(debug=Config.DEBUG, port=Config.PORT, use_reloader=Config.DEBUG)
