@@ -77,4 +77,5 @@ if __name__ == "__main__":
         key = ''.join((random.choice(digits) for x in xrange(48)))
         print(key)
     else:
-        app.run(debug=Config.DEBUG, port=Config.PORT, use_reloader=Config.DEBUG)
+        app.run(debug=Config.DEBUG, port=Config.PORT,
+                use_reloader=Config.DEBUG)
