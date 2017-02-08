@@ -23,7 +23,7 @@ from os import environ
 import random
 
 import git
-from flask import Flask
+from flask import Flask, render_template
 
 try:
     __revision__ = git.Repo('.').git.describe(tags=True, dirty=True,
@@ -62,6 +62,26 @@ app = Flask(__name__)
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config["SECRET_KEY"] = Config.SECRET_KEY  # for WTF-forms and login
+
+
+class Options(object):
+    @staticmethod
+    def get_sitename():
+        return 'eikonopher'
+
+    @staticmethod
+    def get_revision():
+        return __revision__
+
+
+@app.context_processor
+def setup_options():
+    return {'Options': Options}
+
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 if __name__ == "__main__":
 
