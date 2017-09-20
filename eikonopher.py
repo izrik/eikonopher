@@ -24,6 +24,7 @@ import random
 
 import git
 from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
 
 try:
     __revision__ = git.Repo('.').git.describe(tags=True, dirty=True,
@@ -67,6 +68,10 @@ app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config["SECRET_KEY"] = Config.SECRET_KEY  # for WTF-forms and login
 app.config['SQLALCHEMY_DATABASE_URI'] = Config.DB_URI
+
+# extensions
+db = SQLAlchemy(app)
+app.db = db
 
 
 class Options(object):
