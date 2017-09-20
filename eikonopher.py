@@ -75,6 +75,25 @@ db = SQLAlchemy(app)
 app.db = db
 
 
+class Image(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), name='title')
+    slug = db.Column(db.String(100), index=True, unique=True)
+    description = db.Column(db.Text)
+    filename = db.Column(db.Text)
+    date = db.Column(db.DateTime)
+    last_updated_date = db.Column(db.DateTime, nullable=False)
+
+    def __init__(self, title, slug, description, filename, date,
+                 last_updated_date):
+        self.title = title
+        self.slug = slug
+        self.description = description
+        self.filename = filename
+        self.date = date
+        self.last_updated_date = last_updated_date
+
+
 class Options(object):
     @staticmethod
     def get_sitename():
