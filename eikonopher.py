@@ -36,6 +36,7 @@ class Config(object):
     DEBUG = environ.get('EIKONOPHER_DEBUG', False)
     PORT = environ.get('EIKONOPHER_PORT', 4506)
     SECRET_KEY = environ.get('EIKONOPHER_SECRET_KEY', 'secret')
+    DB_URI = environ.get('EIKONOPHER_DB_URI', 'sqlite:////tmp/eikonopher.db')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -49,6 +50,8 @@ if __name__ == "__main__":
                         default=Config.SECRET_KEY,
                         help='The secret key used to establish secure '
                              'sessions with clients')
+    parser.add_argument('--db-uri', default=Config.DB_URI,
+                        help='The url at which to find the database.')
 
     parser.add_argument('--create-secret-key', action='store_true')
 
@@ -57,11 +60,13 @@ if __name__ == "__main__":
     Config.DEBUG = args.debug
     Config.PORT = args.port
     Config.SECRET_KEY = args.secret_key
+    Config.DB_URI = args.db_uri
 
 app = Flask(__name__)
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config["SECRET_KEY"] = Config.SECRET_KEY  # for WTF-forms and login
+app.config['SQLALCHEMY_DATABASE_URI'] = Config.DB_URI
 
 
 class Options(object):
@@ -91,6 +96,7 @@ if __name__ == "__main__":
     print('Port: {}'.format(Config.PORT))
     if Config.DEBUG:
         print('Secret Key: {}'.format(Config.SECRET_KEY))
+        print('DB URI: {}'.format(Config.DB_URI))
 
     if args.create_secret_key:
         digits = '0123456789abcdef'
