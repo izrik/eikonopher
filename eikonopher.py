@@ -55,7 +55,11 @@ if __name__ == "__main__":
     parser.add_argument('--db-uri', default=Config.DB_URI,
                         help='The url at which to find the database.')
 
-    parser.add_argument('--create-secret-key', action='store_true')
+    parser.add_argument('--create-secret-key', action='store_true',
+                        help='Generate a random string to use as a secret '
+                             'key.')
+    parser.add_argument('--create-db', action='store_true',
+                        help="Create all DB objects.")
 
     args = parser.parse_args()
 
@@ -114,6 +118,10 @@ def index():
     return render_template("index.html")
 
 
+def create_db():
+    db.create_all()
+
+
 if __name__ == "__main__":
 
     print('eikonopher')
@@ -128,6 +136,9 @@ if __name__ == "__main__":
         digits = '0123456789abcdef'
         key = ''.join((random.choice(digits) for x in xrange(48)))
         print(key)
+    elif args.create_db:
+        print('Setting up the database')
+        create_db()
     else:
         app.run(debug=Config.DEBUG, port=Config.PORT,
                 use_reloader=Config.DEBUG)
