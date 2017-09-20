@@ -39,6 +39,7 @@ class Config(object):
     SECRET_KEY = environ.get('EIKONOPHER_SECRET_KEY', 'secret')
     DB_URI = environ.get('EIKONOPHER_DB_URI', 'sqlite:////tmp/eikonopher.db')
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
@@ -92,6 +93,7 @@ def setup_options():
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 if __name__ == "__main__":
 
