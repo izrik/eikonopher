@@ -19,12 +19,18 @@
 # along with eikonopher.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import string
 from os import environ
 import random
+from datetime import datetime
+import os
+import os.path
 
 import git
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.exceptions import BadRequest, InternalServerError
+from werkzeug.utils import secure_filename
 
 try:
     __revision__ = git.Repo('.').git.describe(tags=True, dirty=True,
@@ -113,6 +119,10 @@ class Options(object):
         return __revision__
 
 
+def generate_slug(length=6, chars=string.ascii_lowercase + string.digits):
+    return ''.join(random.choice(chars) for _ in xrange(length))
+
+
 @app.context_processor
 def setup_options():
     return {'Options': Options}
@@ -121,6 +131,49 @@ def setup_options():
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/new", methods=['GET', 'POST'])
+def create_new():
+    if request.method == 'GET':
+        return render_template('new.html')
+
+    title = request.form['title'].strip()
+    if not title:
+        raise BadRequest("The page's title is invalid.")
+
+    f = request.files['file']
+    sfilename = secure_filename(f.filename)
+    filepart, ext = os.path.splitext(sfilename)
+
+    slug_len = 6
+    slug_count = 0
+    while True:
+        slug = generate_slug(slug_len)
+        if not Image.query.filter_by(slug=slug).first():
+            filename = slug + ext
+            full_path = os.path.join(Config.UPLOAD_FOLDER, filename)
+            if not os.path.exists(full_path):
+                break
+        slug_count += 1
+        if slug_count > 6:
+            slug_count = 0
+            slug_len += 1
+            if slug_len > 12:
+                # TODO: get rid of this somehow. do it The Right Way, whatever
+                # that is.
+                raise InternalServerError('Can\'t find a unique filename')
+
+    description = request.form['description']
+
+    dt = datetime.utcnow()
+    image = Image(title, slug, description, full_path, dt, dt)
+
+    f.save(full_path)
+
+    db.session.add(image)
+    db.session.commit()
+    return redirect(url_for('index'))
 
 
 def create_db():
