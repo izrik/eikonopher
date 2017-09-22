@@ -38,6 +38,7 @@ class Config(object):
     PORT = environ.get('EIKONOPHER_PORT', 4506)
     SECRET_KEY = environ.get('EIKONOPHER_SECRET_KEY', 'secret')
     DB_URI = environ.get('EIKONOPHER_DB_URI', 'sqlite:////tmp/eikonopher.db')
+    UPLOAD_PREFIX = environ.get('EIKONOPHER_UPLOAD_FOLDER')
 
 
 if __name__ == "__main__":
@@ -54,6 +55,9 @@ if __name__ == "__main__":
                              'sessions with clients')
     parser.add_argument('--db-uri', default=Config.DB_URI,
                         help='The url at which to find the database.')
+    parser.add_argument('--upload-folder', default=Config.UPLOAD_PREFIX,
+                        help='Path to a folder on the local filesystem in '
+                             'which to put uploaded files.')
 
     parser.add_argument('--create-secret-key', action='store_true',
                         help='Generate a random string to use as a secret '
@@ -67,6 +71,7 @@ if __name__ == "__main__":
     Config.PORT = args.port
     Config.SECRET_KEY = args.secret_key
     Config.DB_URI = args.db_uri
+    Config.UPLOAD_FOLDER = args.upload_folder
 
 app = Flask(__name__)
 
