@@ -190,7 +190,7 @@ def create_new():
 
     db.session.add(image)
     db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('get_image', slug=image.slug))
 
 
 def create_db():
