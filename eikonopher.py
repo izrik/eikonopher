@@ -27,7 +27,7 @@ import os
 import os.path
 
 import git
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from werkzeug.utils import secure_filename
@@ -139,6 +139,15 @@ def get_image(slug):
     if not image:
         raise NotFound("No image found named \"{}\"".format(slug))
     return render_template('image.html', image=image)
+
+
+@app.route("/raw/<slug>")
+def get_raw_image(slug):
+    image = Image.query.filter_by(slug=slug).first()
+    if not image:
+        raise NotFound("No image found named \"{}\"".format(slug))
+
+    return send_file(image.filename)
 
 
 @app.route("/new", methods=['GET', 'POST'])
