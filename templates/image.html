@@ -24,6 +24,7 @@ along with eikonopher.  If not, see <http://www.gnu.org/licenses/>.
 
 <div class="container">
     <span>{{ image.title }}</span>
+    <span><img src="{{ url_for('get_raw_image', slug=image.slug) }}"/></span>
     <span>Description:<p>{{ image.description }}</p></span>
     <span>Last updated: {{ image.last_updated_date }}</span>
 </div>
