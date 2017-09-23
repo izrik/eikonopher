@@ -29,7 +29,7 @@ import os.path
 import git
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.exceptions import BadRequest, InternalServerError
+from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from werkzeug.utils import secure_filename
 
 try:
@@ -131,6 +131,14 @@ def setup_options():
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/i/<slug>")
+def get_image(slug):
+    image = Image.query.filter_by(slug=slug).first()
+    if not image:
+        raise NotFound("No image found named \"{}\"".format(slug))
+    return render_template('image.html', image=image)
 
 
 @app.route("/new", methods=['GET', 'POST'])
