@@ -41,6 +41,7 @@ except git.InvalidGitRepositoryError:
 
 class Config(object):
     DEBUG = environ.get('EIKONOPHER_DEBUG', False)
+    HOST = environ.get('EIKONOPHER_HOST', '127.0.0.1')
     PORT = environ.get('EIKONOPHER_PORT', 4506)
     SECRET_KEY = environ.get('EIKONOPHER_SECRET_KEY', 'secret')
     DB_URI = environ.get('EIKONOPHER_DB_URI', 'sqlite:////tmp/eikonopher.db')
@@ -53,6 +54,10 @@ if __name__ == "__main__":
     parser.add_argument('--debug', action='store_true',
                         help='Print additional information',
                         default=Config.DEBUG)
+    parser.add_argument('--host', type=str, default=Config.HOST,
+                        help='The ip address to listen on. Set to 0.0.0.0 to '
+                             'accept any incoming connections on any network '
+                             'interface. Defaults to 127.0.0.1 for testing.')
     parser.add_argument('--port', type=int, default=Config.PORT,
                         help='The tcp port on which to serve requests')
     parser.add_argument('--secret-key', type=str,
@@ -74,6 +79,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     Config.DEBUG = args.debug
+    Config.HOST = args.host
     Config.PORT = args.port
     Config.SECRET_KEY = args.secret_key
     Config.DB_URI = args.db_uri
@@ -202,6 +208,7 @@ if __name__ == "__main__":
     print('eikonopher')
     print('__revision__: {}'.format(__revision__))
     print('Debug: {}'.format(Config.DEBUG))
+    print('Host: {}'.format(Config.HOST))
     print('Port: {}'.format(Config.PORT))
     if Config.DEBUG:
         print('Secret Key: {}'.format(Config.SECRET_KEY))
@@ -215,5 +222,5 @@ if __name__ == "__main__":
         print('Setting up the database')
         create_db()
     else:
-        app.run(debug=Config.DEBUG, port=Config.PORT,
+        app.run(debug=Config.DEBUG, host=Config.HOST, port=Config.PORT,
                 use_reloader=Config.DEBUG)
