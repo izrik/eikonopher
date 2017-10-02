@@ -115,6 +115,12 @@ class Image(db.Model):
         self.last_updated_date = last_updated_date
 
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100))
+    hashed_password = db.Column(db.String(100))
+
+
 class Options(object):
     @staticmethod
     def get_sitename():
