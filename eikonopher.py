@@ -31,6 +31,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from werkzeug.utils import secure_filename
+import bcrypt
 
 try:
     __revision__ = git.Repo('.').git.describe(tags=True, dirty=True,
@@ -75,6 +76,8 @@ if __name__ == "__main__":
                              'key.')
     parser.add_argument('--create-db', action='store_true',
                         help="Create all DB objects.")
+    parser.add_argument('--hash-password', action='store',
+                        help='Hash a password to be stored in the db.')
 
     args = parser.parse_args()
 
@@ -227,6 +230,10 @@ if __name__ == "__main__":
     elif args.create_db:
         print('Setting up the database')
         create_db()
+    elif args.hash_password is not None:
+        password = args.hash_password
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(prefix='2a'))
+        print(hashed_password)
     else:
         app.run(debug=Config.DEBUG, host=Config.HOST, port=Config.PORT,
                 use_reloader=Config.DEBUG)
