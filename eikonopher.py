@@ -29,6 +29,7 @@ import os.path
 import git
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import login_user, LoginManager
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from werkzeug.utils import secure_filename
 import bcrypt
@@ -100,6 +101,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = Config.DB_URI
 # extensions
 db = SQLAlchemy(app)
 app.db = db
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 class Image(db.Model):
@@ -125,10 +128,14 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100))
     hashed_password = db.Column(db.String(100))
+    is_active = True
 
     def __init__(self, email, hashed_password):
         self.email = email
         self.hashed_password = hashed_password
+
+    def get_id(self):
+        return unicode(self.email)
 
 
 class Options(object):
@@ -213,6 +220,30 @@ def create_new():
     db.session.add(image)
     db.session.commit()
     return redirect(url_for('get_image', slug=image.slug))
+
+
+@login_manager.user_loader
+def load_user(email):
+    return User.query.filter_by(email=email).first()
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    email = request.form['email']
+    password = request.form['password']
+    user = User.query.filter_by(email=email).first()
+    if user is None:
+        return render_template('login.html', incorrect=True)
+
+    if not bcrypt.checkpw(password.encode('utf-8'),
+                          user.hashed_password.encode('utf-8')):
+        return render_template('login.html', incorrect=True)
+
+    login_user(user)
+    return redirect(request.args.get('next') or url_for('index'))
 
 
 def create_db():

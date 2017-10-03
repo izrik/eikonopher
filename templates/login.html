@@ -1,0 +1,41 @@
+{#
+
+eikonopher -  A simple python web service for hosting images and other files
+Copyright (C) 2016-2017 izrik
+
+This file is a part of eikonopher.
+
+Eikonopher is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Eikonopher is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with eikonopher.  If not, see <http://www.gnu.org/licenses/>.
+
+#}
+{% extends 'base.html' %}
+{% block title %}Login - {{ super() }}{% endblock %}
+{% block header%}{% endblock %}
+{% block header_sub_text %}Login{% endblock %}
+{% block header_nav_items %}{% endblock %}
+{% block header_nav_expand_button %}{% endblock %}
+{% block content %}
+
+<div class="container">
+  <form action="" method="post" class="form-horizontal">
+    <h2>Login</h2>
+    <input type="text" id="email" name="email" class="input-xlarge"
+        placeholder="Email Address" required>
+    <input type="password" id="password" name="password" class="input-xlarge"
+        placeholder="Enter Password" required>
+    <button type="submit" class="btn btn-success">Login</button>
+  </form>
+</div>
+
+{% endblock %}
