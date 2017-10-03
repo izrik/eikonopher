@@ -78,6 +78,9 @@ if __name__ == "__main__":
                         help="Create all DB objects.")
     parser.add_argument('--hash-password', action='store',
                         help='Hash a password to be stored in the db.')
+    parser.add_argument('--create-user', action='store', nargs=2,
+                        metavar=('EMAIL', 'PASSWORD'),
+                        help='Create a user in the DB.')
 
     args = parser.parse_args()
 
@@ -122,6 +125,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100))
     hashed_password = db.Column(db.String(100))
+
+    def __init__(self, email, hashed_password):
+        self.email = email
+        self.hashed_password = hashed_password
 
 
 class Options(object):
@@ -234,6 +241,13 @@ if __name__ == "__main__":
         password = args.hash_password
         hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
         print(hashed_password)
+    elif args.create_user is not None:
+        email, password = args.create_user
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+        print('Creating user "{}"'.format(email))
+        user = User(email, hashed_password)
+        db.session.add(user)
+        db.session.commit()
     else:
         app.run(debug=Config.DEBUG, host=Config.HOST, port=Config.PORT,
                 use_reloader=Config.DEBUG)
