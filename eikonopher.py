@@ -29,7 +29,7 @@ import os.path
 import git
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_user, LoginManager, logout_user
+from flask_login import login_user, LoginManager, logout_user, current_user
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from werkzeug.utils import secure_filename
 import bcrypt
@@ -129,6 +129,8 @@ class User(db.Model):
     email = db.Column(db.String(100))
     hashed_password = db.Column(db.String(100))
     is_active = True
+    is_authenticated = True
+    is_active = True
 
     def __init__(self, email, hashed_password):
         self.email = email
@@ -159,7 +161,7 @@ def setup_options():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", current_user=current_user)
 
 
 @app.route("/i/<slug>")
@@ -167,7 +169,8 @@ def get_image(slug):
     image = Image.query.filter_by(slug=slug).first()
     if not image:
         raise NotFound("No image found named \"{}\"".format(slug))
-    return render_template('image.html', image=image)
+    return render_template('image.html', image=image,
+                           current_user=current_user)
 
 
 @app.route("/raw/<slug>")
@@ -182,7 +185,7 @@ def get_raw_image(slug):
 @app.route("/new", methods=['GET', 'POST'])
 def create_new():
     if request.method == 'GET':
-        return render_template('new.html')
+        return render_template('new.html', current_user=current_user)
 
     title = request.form['title'].strip()
     if not title:
@@ -230,17 +233,19 @@ def load_user(email):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', current_user=current_user)
 
     email = request.form['email']
     password = request.form['password']
     user = User.query.filter_by(email=email).first()
     if user is None:
-        return render_template('login.html', incorrect=True)
+        return render_template('login.html', incorrect=True,
+                               current_user=current_user)
 
     if not bcrypt.checkpw(password.encode('utf-8'),
                           user.hashed_password.encode('utf-8')):
-        return render_template('login.html', incorrect=True)
+        return render_template('login.html', incorrect=True,
+                               current_user=current_user)
 
     login_user(user)
     return redirect(request.args.get('next') or url_for('index'))

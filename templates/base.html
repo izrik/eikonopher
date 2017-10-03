@@ -73,6 +73,11 @@ along with eikonopher.  If not, see <http://www.gnu.org/licenses/>.
     {% block footer %}
     <div class="container">
         <br/>
+        {% if current_user.is_authenticated %}
+        <small>Logged in as {{ current_user.email }} - <a href="{{ url_for('logout') }}">logout</a></small><br/>
+        {% else %}
+        <small><a href="/login">Login</a></small><br/>
+        {% endif %}
         {% block copyright %}
         <small>Copyright &copy; 2017 by the author.</small><br/>
         {% endblock %}
