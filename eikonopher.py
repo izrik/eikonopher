@@ -232,7 +232,7 @@ if __name__ == "__main__":
         create_db()
     elif args.hash_password is not None:
         password = args.hash_password
-        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(prefix='2a'))
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
         print(hashed_password)
     else:
         app.run(debug=Config.DEBUG, host=Config.HOST, port=Config.PORT,
