@@ -29,7 +29,7 @@ import os.path
 import git
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_user, LoginManager
+from flask_login import login_user, LoginManager, logout_user
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from werkzeug.utils import secure_filename
 import bcrypt
@@ -244,6 +244,12 @@ def login():
 
     login_user(user)
     return redirect(request.args.get('next') or url_for('index'))
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 
 def create_db():
