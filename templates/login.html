@@ -30,6 +30,13 @@ along with eikonopher.  If not, see <http://www.gnu.org/licenses/>.
 <div class="container">
   <form action="" method="post" class="form-horizontal">
     <h2>Login</h2>
+    {% if incorrect %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      The email address or password is incorrect</div>
+    {% endif %}
     <input type="text" id="email" name="email" class="input-xlarge"
         placeholder="Email Address" required>
     <input type="password" id="password" name="password" class="input-xlarge"
