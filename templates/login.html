@@ -37,10 +37,8 @@ along with eikonopher.  If not, see <http://www.gnu.org/licenses/>.
       </button>
       The email address or password is incorrect</div>
     {% endif %}
-    <input type="text" id="email" name="email" class="input-xlarge"
-        placeholder="Email Address" required>
-    <input type="password" id="password" name="password" class="input-xlarge"
-        placeholder="Enter Password" required>
+    {{ form.email(placeholder="Email Address", class_="input=xlarge", required="") }}
+    {{ form.password(id="password", class_="input-xlarge", placeholder="Enter Password", required="") }}
     <button type="submit" class="btn btn-success">Login</button>
   </form>
 </div>

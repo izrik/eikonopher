@@ -30,9 +30,12 @@ import git
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user, LoginManager, logout_user, current_user
+from flask_wtf import FlaskForm
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from werkzeug.utils import secure_filename
 import bcrypt
+from wtforms import StringField, PasswordField
+from wtforms.validators import Email, DataRequired
 
 try:
     __revision__ = git.Repo('.').git.describe(tags=True, dirty=True,
@@ -230,22 +233,28 @@ def load_user(email):
     return User.query.filter_by(email=email).first()
 
 
+class LoginForm(FlaskForm):
+    email = StringField('email', validators=[Email(), DataRequired()])
+    password = PasswordField('password', validators=[DataRequired()])
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html', current_user=current_user)
+        return render_template('login.html', current_user=current_user,
+                               form=LoginForm())
 
     email = request.form['email']
     password = request.form['password']
     user = User.query.filter_by(email=email).first()
     if user is None:
         return render_template('login.html', incorrect=True,
-                               current_user=current_user)
+                               current_user=current_user, form=LoginForm())
 
     if not bcrypt.checkpw(password.encode('utf-8'),
                           user.hashed_password.encode('utf-8')):
         return render_template('login.html', incorrect=True,
-                               current_user=current_user)
+                               current_user=current_user, form=LoginForm())
 
     login_user(user)
     return redirect(request.args.get('next') or url_for('index'))
