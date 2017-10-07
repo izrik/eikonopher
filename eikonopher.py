@@ -30,7 +30,7 @@ import git
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user, LoginManager, logout_user, current_user
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, CSRFProtect
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from werkzeug.utils import secure_filename
 import bcrypt
@@ -106,6 +106,7 @@ db = SQLAlchemy(app)
 app.db = db
 login_manager = LoginManager()
 login_manager.init_app(app)
+csrf = CSRFProtect(app)
 
 
 class Image(db.Model):

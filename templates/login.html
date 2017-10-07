@@ -37,6 +37,7 @@ along with eikonopher.  If not, see <http://www.gnu.org/licenses/>.
       </button>
       The email address or password is incorrect</div>
     {% endif %}
+    {{ form.csrf_token }}
     {{ form.email(placeholder="Email Address", class_="input=xlarge", required="") }}
     {{ form.password(id="password", class_="input-xlarge", placeholder="Enter Password", required="") }}
     <button type="submit" class="btn btn-success">Login</button>
