@@ -241,21 +241,26 @@ class LoginForm(FlaskForm):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    form = LoginForm()
     if request.method == 'GET':
         return render_template('login.html', current_user=current_user,
-                               form=LoginForm())
+                               form=form)
+
+    if not form.validate_on_submit():
+        return render_template('login.html', incorrect=True,
+                               current_user=current_user, form=form)
 
     email = request.form['email']
     password = request.form['password']
     user = User.query.filter_by(email=email).first()
     if user is None:
         return render_template('login.html', incorrect=True,
-                               current_user=current_user, form=LoginForm())
+                               current_user=current_user, form=form)
 
     if not bcrypt.checkpw(password.encode('utf-8'),
                           user.hashed_password.encode('utf-8')):
         return render_template('login.html', incorrect=True,
-                               current_user=current_user, form=LoginForm())
+                               current_user=current_user, form=form)
 
     login_user(user)
     return redirect(request.args.get('next') or url_for('index'))
