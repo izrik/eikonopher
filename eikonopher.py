@@ -31,11 +31,12 @@ from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user, LoginManager, logout_user, current_user
 from flask_wtf import FlaskForm, CSRFProtect
+from flask_wtf.file import FileField
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 from werkzeug.utils import secure_filename
 import bcrypt
-from wtforms import StringField, PasswordField
-from wtforms.validators import Email, DataRequired
+from wtforms import StringField, PasswordField, TextAreaField
+from wtforms.validators import Email, DataRequired, InputRequired, Optional
 
 try:
     __revision__ = git.Repo('.').git.describe(tags=True, dirty=True,
@@ -186,10 +187,23 @@ def get_raw_image(slug):
     return send_file(image.filename)
 
 
+class NewImageForm(FlaskForm):
+    file = FileField("file", validators=[InputRequired()])
+    title = StringField("title", validators=[InputRequired()])
+    description = TextAreaField("description", validators=[Optional()])
+
+
 @app.route("/new", methods=['GET', 'POST'])
 def create_new():
+    form = NewImageForm()
     if request.method == 'GET':
-        return render_template('new.html', current_user=current_user)
+        return render_template('new.html', current_user=current_user,
+                               form=form)
+
+    if not form.validate_on_submit():
+        errors = ['{}: {}'.format(key, err) for key, value in form.errors.iteritems() for err in value]
+        return render_template('new.html', current_user=current_user,
+                               form=form, errors=errors)
 
     title = request.form['title'].strip()
     if not title:
